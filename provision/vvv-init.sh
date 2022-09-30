@@ -88,11 +88,16 @@ copy_nginx_configs() {
     echo " * Using the default vvv-nginx-default.conf, to customize, create a vvv-nginx-custom.conf"
     noroot cp -f "${VVV_PATH_TO_SITE}/provision/vvv-nginx-default.conf" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
   fi
-  
+
   echo " * Applying public dir setting to Nginx config"
+  echo "PUBLIC_DIR"
+  echo ${PUBLIC_DIR}
   noroot sed -i "s#{vvv_public_dir}#/${PUBLIC_DIR}#" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+  cat "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
 
   LIVE_URL=$(get_config_value 'live_url' '')
+  echo "LIVE_URL"
+  echo ${LIVE_URL}}
   if [ ! -z "$LIVE_URL" ]; then
     echo " * Adding support for Live URL redirects to NGINX of the website's media"
     # replace potential protocols, and remove trailing slashes
@@ -112,9 +117,13 @@ END_HEREDOC
     sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n\\1/g'
     )
 
+    echo "redirect_config"
+    echo ${redirect_config}
     noroot sed -i -e "s|\(.*\){{LIVE_URL}}|\1${redirect_config}|" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
   else
+    echo "sed empty"
     noroot sed -i "s#{{LIVE_URL}}##" "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
+    cat "${VVV_PATH_TO_SITE}/provision/vvv-nginx.conf"
   fi
 }
 
